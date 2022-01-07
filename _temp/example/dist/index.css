@@ -1,0 +1,10 @@
+/* src/styles.css */
+html,
+* {
+  box-sizing: border-box;
+}
+body {
+  overscroll-behavior: none;
+  margin: 0px;
+  padding: 0px;
+}

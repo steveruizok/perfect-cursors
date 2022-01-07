@@ -1,0 +1,26 @@
+{
+  "version": "1.4.3",
+  "name": "perfect-cursors-example",
+  "description": "An example project for perfect-cursors.",
+  "author": "@steveruizok",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steveruizok/perfect-cursors/perfect-cursors.git"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/dev.mjs -w",
+    "build": "node scripts/build.mjs"
+  },
+  "files": [],
+  "devDependencies": {
+    "esbuild": "^0.13.8",
+    "esbuild-serve": "^1.0.1",
+    "perfect-cursors": "../dist",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "typescript": "4.2.3"
+  },
+  "gitHead": "a7dac0f83ad998e205c2aab58182cb4ba4e099a6"
+}
