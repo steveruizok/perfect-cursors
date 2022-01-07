@@ -1,78 +1,117 @@
-# Turborepo starter
+# perfect-cursors
 
-This is an official Yarn v1 starter turborepo.
+Perfect interpolation for animated multiplayer cursors. Used in [tldraw](https://tldraw.com).
 
-## What's inside?
+💕 Love this library? Consider [becoming a sponsor](https://github.com/sponsors/steveruizok?frequency=recurring&sponsor=steveruizok).
 
-This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package manager. It includes the following packages/apps:
+## Installation
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org) app
-- `web`: another [Next.js](https://nextjs.org) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Jest](https://jestjs.io) test runner for all things JavaScript
-- [Prettier](https://prettier.io) for code formatting
-
-## Setup
-
-This repository is used in the `npx create-turbo` command, and selected when choosing which package manager you wish to use with your monorepo (Yarn).
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-yarn run build
+```bash
+yarn add perfect-cursors
+# or
+npm i perfect-cursors
 ```
 
-### Develop
+## Usage
 
-To develop all apps and packages, run the following command:
+Quick n' dirty docs.
 
+This library may be used to smoothly animate a cursor based on presence information from a multiplayer backend, such as the Presence layer of [Y.js](https://github.com/yjs/yjs).
+
+### Usage in React
+
+To use the library in React, create a React hook called `usePerfectCursor`.
+
+```tsx
+// hooks/usePerfectCursor
+
+export function usePerfectCursor(
+  cb: (point: number[]) => void,
+  point?: number[]
+) {
+  const [pc] = React.useState(() => new PerfectCursor(cb))
+
+  React.useLayoutEffect(() => {
+    if (point) pc.addPoint(point)
+    return () => pc.dispose()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pc])
+
+  const onPointChange = React.useCallback(
+    (point: number[]) => pc.addPoint(point),
+    [pc]
+  )
+
+  return onPointChange
+}
 ```
-cd my-turborepo
-yarn run dev
+
+And then a Cursor component that looks something like this:
+
+```tsx
+// components/Cursor
+
+import * as React from "react"
+import { usePerfectCursor } from "../hooks/usePerfectCursors"
+
+export function Cursor({ point }: { point: number[] }) {
+  const rCursor = React.useRef<SVGSVGElement>(null)
+
+  const animateCursor = React.useCallback((point: number[]) => {
+    const elm = rCursor.current
+    if (!elm) return
+    elm.style.setProperty(
+      "transform",
+      `translate(${point[0]}px, ${point[1]}px)`
+    )
+  }, [])
+
+  const onPointMove = usePerfectCursor(animateCursor)
+
+  React.useLayoutEffect(() => onPointMove(point), [onPointMove, point])
+
+  return (
+    <svg
+      ref={rCursor}
+      style={{
+        position: "absolute",
+        top: -15,
+        left: -15,
+        width: 35,
+        height: 35,
+      }}
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 35 35"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <g fill="rgba(0,0,0,.2)" transform="translate(1,1)">
+        <path d="m12 24.4219v-16.015l11.591 11.619h-6.781l-.411.124z" />
+        <path d="m21.0845 25.0962-3.605 1.535-4.682-11.089 3.686-1.553z" />
+      </g>
+      <g fill="white">
+        <path d="m12 24.4219v-16.015l11.591 11.619h-6.781l-.411.124z" />
+        <path d="m21.0845 25.0962-3.605 1.535-4.682-11.089 3.686-1.553z" />
+      </g>
+      <g fill={"red"}>
+        <path d="m19.751 24.4155-1.844.774-3.1-7.374 1.841-.775z" />
+        <path d="m13 10.814v11.188l2.969-2.866.428-.139h4.768z" />
+      </g>
+    </svg>
+  )
+}
 ```
 
-### Remote Caching
+When the user's cursor point changes, pass that information to the Cursor component.
 
-Turborepo can use a technique known as [Remote Caching (Beta)](https://turborepo.org/docs/features/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## Community
 
-By default, Turborepo will cache locally. To enable Remote Caching (Beta) you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+### License
 
-```
-cd my-turborepo
-npx turbo login
-```
+This project is licensed under MIT.
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+If you're using the library in a commercial product, please consider [becoming a sponsor](https://github.com/sponsors/steveruizok?frequency=recurring&sponsor=steveruizok).
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
+## Author
 
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Pipelines](https://turborepo.org/docs/features/pipelines)
-- [Caching](https://turborepo.org/docs/features/caching)
-- [Remote Caching (Beta)](https://turborepo.org/docs/features/remote-caching)
-- [Scoped Tasks](https://turborepo.org/docs/features/scopes)
-- [Configuration Options](https://turborepo.org/docs/reference/configuration)
-- [CLI Usage](https://turborepo.org/docs/reference/command-line-reference)
+- [@steveruizok](https://twitter.com/steveruizok)
