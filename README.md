@@ -12,11 +12,89 @@ yarn add perfect-cursors
 npm i perfect-cursors
 ```
 
+## Introduction
+
+You can use this library to smoothly animate a cursor based on limited information. 
+
+![Kapture 2022-01-08 at 09 25 50](https://user-images.githubusercontent.com/23072548/148639100-864b46ee-f69f-4f9a-a695-848936050b50.gif)
+
+_Above: We are updating the red cursor's position once every 80 milliseconds. The `perfect-cursors` library is being used to correctly animate between these positions._
+
+
+### Animating between points
+
+When implementing a multiplayer app, you will most likely be displaying each user's cursor location based on the information you receive from a multiplayer service such as [Pusher](https://pusher.com/), [Liveblocks](https://liveblocks.io/). 
+
+In a perfect world, these updates would occur  "in real time": that is, arriving with zero latency and arriving at the same rate as the user's monitor.
+
+![Kapture 2022-01-08 at 09 35 34](https://user-images.githubusercontent.com/23072548/148639423-529a7027-cab9-4085-a9f4-d85e28cce744.gif)
+
+_Above: Updating the cursor instantly._
+
+In the real world, however, services often "throttle" their updates to roughly one update every 50-80 milliseconds.
+
+Updating the cursors' locations directly will cause cursors to "jump" between points.
+
+![Kapture 2022-01-08 at 09 22 43](https://user-images.githubusercontent.com/23072548/148639039-f810a907-6d43-433c-b446-92d90f240281.gif)
+
+_Above: Updating the cursor's once position every 80 milliseconds._
+
+Transitioning between points via CSS can work, however this looks increasingly artificial as the delay increases. Worse, because updates do not come in on an _exact_ interval, some animations will never finish while others will pause between animations.
+
+![Kapture 2022-01-08 at 09 31 55](https://user-images.githubusercontent.com/23072548/148639280-a26003c6-f628-49cf-a4ea-3cf1b7881fdf.gif)
+
+_Above: Transitioning the cursor's once position every 80 milliseconds._
+
+Smart animating with JavaScript and dynamic durations can be better, however this still looks artificial as the delay increases.
+
+![Kapture 2022-01-08 at 10 11 39](https://user-images.githubusercontent.com/23072548/148640411-14821049-fbca-4d39-ae0e-fb601a6f27de.gif)
+
+_Above: Animating the cursor once position every 80 milliseconds._
+
+For best results, you would animate while _interpolating_ the cursors' locations based on a set of connected curves (e.g. a "spline").
+
+![Kapture 2022-01-08 at 09 25 50](https://user-images.githubusercontent.com/23072548/148639100-864b46ee-f69f-4f9a-a695-848936050b50.gif)
+
+_Above: Animating the cursor once position every 80 milliseconds using spline interpolation._
+
+In this way, your animations can very closely approximate the actual movement of a cursor. So closely, in fact, that it appears as though the cursor is being updated "in real time" with a "one-update" delay.
+ 
 ## Usage
 
 Quick n' dirty docs.
 
-This library may be used to smoothly animate a cursor based on presence information from a multiplayer backend, such as the Presence layer of [Y.js](https://github.com/yjs/yjs).
+### Usage
+
+To use the library directly, create an instance of the `PerfectCursor` class and pass it a callback to fire on each animation frame.
+
+```ts
+import { PerfectCursor } from "perfect-cursors"
+
+const elm = document.getElementById("cursor")
+
+function updateMyCursor(point: number[]) {
+  elm.style.setProperty(
+    "transform",
+    `translate(${point[0]}px, ${point[1]}px)`
+   )
+}
+
+const pc = new PerfectCursor(updateMyCursor)
+```
+
+Use the instance's `addPoint` to add a point whenever you have a new one. 
+ 
+```ts
+pc.addPoint([0, 0])
+setTimeout(() => pc.addPoint([100, 100]), 80)
+setTimeout(() => pc.addPoint([200, 150]), 160)
+```
+
+Use the `dispose` method to clean up any intervals.
+
+```
+pc.dispose()
+```
 
 ### Usage in React
 
@@ -24,6 +102,8 @@ To use the library in React, create a React hook called `usePerfectCursor`.
 
 ```tsx
 // hooks/usePerfectCursor
+
+import { PerfectCursor } from "perfect-cursors"
 
 export function usePerfectCursor(
   cb: (point: number[]) => void,
