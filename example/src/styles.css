@@ -9,7 +9,7 @@ body {
   padding: 0px;
 }
 
-.tldraw {
+.app {
   position: fixed;
   top: 0px;
   left: 0px;
@@ -17,4 +17,11 @@ body {
   bottom: 0px;
   width: 100%;
   height: 100%;
+}
+
+.duration-wrapper {
+  display: flex;
+  align-items: center;
+  font-family: sans-serif;
+  padding: 12px;
 }

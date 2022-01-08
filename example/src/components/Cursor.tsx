@@ -1,7 +1,8 @@
+import { PerfectCursor } from 'perfect-cursors'
 import * as React from 'react'
 import { usePerfectCursor } from '../hooks/usePerfectCursors'
 
-export function Cursor({ point }: { point: number[] }) {
+export function Cursor({ point, maxInterval }: { point: number[]; maxInterval: number }) {
   const rCursor = React.useRef<SVGSVGElement>(null)
 
   // 1. perfect-cursors
@@ -10,8 +11,21 @@ export function Cursor({ point }: { point: number[] }) {
     if (!elm) return
     elm.style.setProperty('transform', `translate(${point[0]}px, ${point[1]}px)`)
   }, [])
-  const onPointMove = usePerfectCursor(animateCursor)
-  React.useLayoutEffect(() => onPointMove(point), [onPointMove, point])
+
+  const [pc] = React.useState(() => new PerfectCursor(animateCursor))
+
+  React.useLayoutEffect(() => {
+    if (point) pc.addPoint(point)
+    return () => pc.dispose()
+  }, [pc])
+
+  React.useLayoutEffect(() => {
+    PerfectCursor.MAX_INTERVAL = maxInterval
+  }, [maxInterval])
+
+  const onPointChange = React.useCallback((point: number[]) => pc.addPoint(point), [pc])
+
+  React.useLayoutEffect(() => onPointChange(point), [onPointChange, point])
 
   // // 2. Jumping between points
   // const elm = rCursor.current
