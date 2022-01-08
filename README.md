@@ -4,6 +4,8 @@ Perfect interpolation for animated multiplayer cursors. Used in [tldraw](https:/
 
 💕 Love this library? Consider [becoming a sponsor](https://github.com/sponsors/steveruizok?frequency=recurring&sponsor=steveruizok).
 
+[![Edit perfect-cursors-demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/perfect-cursors-demo-u85tu?fontsize=14&hidenavigation=1&theme=dark)
+
 ## Installation
 
 ```bash
